@@ -56,10 +56,10 @@ Generation runs the reverse process starting from $`x_T \sim \mathcal{N}(0, \mat
 \hat{x}_0 = \frac{x_t - \sqrt{1 - \bar{\alpha}_t}\,\varepsilon_\theta(x_t, t)}{\sqrt{\bar{\alpha}_t}}
 ```
 
-The posterior $`q(x_{t-1} \mid x_t, x_0)`$ is Gaussian with mean and variance available in closed form by Bayes' rule; substituting $`\hat{x}_0`$ gives the approximate posterior mean
+The posterior $`q(x_{t-1} \mid x_t, x_0)`$ is Gaussian with mean and variance available in closed form by Bayes' rule:
 
 ```math
-\tilde{\mu}_t = \frac{\sqrt{\bar{\alpha}_{t-1}}\,\beta_t}{1 - \bar{\alpha}_t}\,\hat{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}\,x_t
+\tilde{\mu}_t(x_t, x_0) = \frac{\sqrt{\bar{\alpha}_{t-1}}\,\beta_t}{1 - \bar{\alpha}_t}\,x_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}\,x_t
 ```
 
-from which $`x_{t-1}`$ is sampled.
+Substituting $`\hat{x}_0`$ for $`x_0`$ gives the approximate mean from which $`x_{t-1}`$ is sampled.
