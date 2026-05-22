@@ -16,7 +16,7 @@ Two paradigms are implemented side by side, both trained on CIFAR-10. The autore
 
 ### VQ-VAE
 
-Direct autoregressive modeling over raw pixels is intractable — a 32×32 RGB image has 3072 dimensions, and modeling each pixel conditional on all previous ones requires extreme model capacity. A VQ-VAE first compresses the image to a small grid of discrete tokens. The encoder maps $`x`$ to a continuous spatial latent $`z_e \in \mathbb{R}^{d \times H' \times W'}`$; the vector quantizer replaces each spatial position with the nearest entry in a learned codebook $`\{e_k\}_{k=1}^K`$:
+Direct autoregressive modeling over raw pixels is intractable — a 32×32 RGB image has 3072 dimensions, and modeling each pixel conditional on all previous ones requires extreme model capacity. A Vector Quantized Variational Autoencoder (VQ-VAE) first compresses the image to a small grid of discrete tokens. The encoder maps $`x`$ to a continuous spatial latent $`z_e \in \mathbb{R}^{d \times H' \times W'}`$; the vector quantizer replaces each spatial position with the nearest entry in a learned codebook $`\{e_k\}_{k=1}^K`$:
 
 ```math
 z_q = e_{\,\arg\min_k \|z_e - e_k\|}
@@ -32,7 +32,7 @@ where the commitment term encourages the encoder output to stay close to its ass
 
 ### Autoregressive Transformer
 
-With images compressed to token sequences, modeling $`p(x)`$ reduces to modeling $`p(t_1, \ldots, t_N \mid c)`$ where $`c`$ is the class label and each $`t_i \in \{1, \ldots, K\}`$ is a codebook index. A GPT-style transformer with causal self-attention factorizes this autoregressively:
+With images compressed to token sequences, modeling $`p(x)`$ reduces to modeling $`p(t_1, \ldots, t_N \mid c)`$ where $`c`$ is the class label and each $`t_i \in \{1, \ldots, K\}`$ is a codebook index. A Generative Pre-trained Transformer (GPT)-style transformer with causal self-attention factorizes this autoregressively:
 
 ```math
 p(t_1, \ldots, t_N \mid c) = \prod_{i=1}^{N} p(t_i \mid c,\, t_1, \ldots, t_{i-1})
@@ -48,4 +48,18 @@ The forward process gradually destroys an image by adding Gaussian noise over $`
 q(x_t \mid x_0) = \mathcal{N}\!\left(\sqrt{\bar{\alpha}_t}\,x_0,\;(1 - \bar{\alpha}_t)\mathbf{I}\right), \qquad \bar{\alpha}_t = \prod_{s=1}^{t}(1 - \beta_s)
 ```
 
-which allows sampling $`x_t`$ directly from $`x_0`$ without simulating the chain. A U-Net $`\varepsilon_\theta(x_t, t)`$ is trained to predict the added noise, minimizing $`\|\varepsilon - \varepsilon_\theta(x_t, t)\|^2`$. Generation runs the reverse process: starting from $`x_T \sim \mathcal{N}(0, \mathbf{I})`$, each step samples from the posterior $`q(x_{t-1} \mid x_t, x_0)`$ — where $`x_0`$ is estimated from the predicted noise — whose mean and variance are available in closed form by Bayes' rule.
+which allows sampling $`x_t`$ directly from $`x_0`$ without simulating the chain. A U-Net $`\varepsilon_\theta(x_t, t)`$ is trained to predict the added noise, minimizing $`\|\varepsilon - \varepsilon_\theta(x_t, t)\|^2`$.
+
+Generation runs the reverse process starting from $`x_T \sim \mathcal{N}(0, \mathbf{I})`$. At each step, $`x_0`$ is unknown, so it is estimated by inverting the forward process formula:
+
+```math
+\hat{x}_0 = \frac{x_t - \sqrt{1 - \bar{\alpha}_t}\,\varepsilon_\theta(x_t, t)}{\sqrt{\bar{\alpha}_t}}
+```
+
+The posterior $`q(x_{t-1} \mid x_t, x_0)`$ is Gaussian with mean and variance available in closed form by Bayes' rule; substituting $`\hat{x}_0`$ gives the approximate posterior mean
+
+```math
+\tilde{\mu}_t = \frac{\sqrt{\bar{\alpha}_{t-1}}\,\beta_t}{1 - \bar{\alpha}_t}\,\hat{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}\,x_t
+```
+
+from which $`x_{t-1}`$ is sampled.
