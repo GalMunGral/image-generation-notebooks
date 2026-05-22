@@ -22,11 +22,13 @@ Direct autoregressive modeling over raw pixels is intractable — a 32×32 RGB i
 z_q = e_{\,\arg\min_k \|z_e - e_k\|}
 ```
 
-Since `argmin` has no gradient, the decoder receives a straight-through copy: $`z_q^{\text{st}} = z_e + (z_q - z_e).\texttt{detach()}`$ — the forward pass uses $`z_q`$, the backward pass acts as if $`z_e`$ were used directly. The codebook is updated by exponential moving average. The training loss is
+Since $`\arg\min`$ has no gradient, the straight-through estimator is used: gradients pass through the quantization step as if it were the identity, while the forward pass uses $`z_q`$. The codebook is updated by exponential moving average rather than gradient. The training loss is
 
 ```math
-\mathcal{L} = \|x - \hat{x}\|^2 + \beta\,\|z_q.\texttt{detach()} - z_e\|^2
+\mathcal{L} = \|x - \hat{x}\|^2 + \beta\,\|z_q - z_e\|^2
 ```
+
+where the commitment term encourages the encoder output to stay close to its assigned code.
 
 ### Autoregressive Transformer
 
