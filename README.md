@@ -22,7 +22,7 @@ Direct autoregressive modeling over raw pixels is intractable — a 32×32 RGB i
 z_q = e_{\,\arg\min_k \|z_e - e_k\|}
 ```
 
-Since $`\arg\min`$ has no gradient, the straight-through estimator is used: gradients pass through the quantization step as if it were the identity, while the forward pass uses $`z_q`$. The codebook is updated by exponential moving average rather than gradient. The training loss is
+Since $`\arg\min`$ has no gradient, the straight-through estimator is used: gradients pass through the quantization step as if it were the identity, while the forward pass uses $`z_q`$. The codebook is updated by exponential moving average rather than gradient: for each entry $`e_k`$, the algorithm maintains a running average of the encoder outputs assigned to it and of the assignment count, updated as $`m_k \leftarrow \gamma m_k + (1-\gamma)\sum_{i \to k} z_e^{(i)}`$ and $`n_k \leftarrow \gamma n_k + (1-\gamma) |\{i \to k\}|`$ after each batch, then sets $`e_k \leftarrow m_k / n_k`$. Old assignments decay geometrically, so each entry tracks the centroid of recently assigned encoder outputs. The training loss is
 
 ```math
 \mathcal{L} = \|x - \hat{x}\|^2 + \beta\,\|z_q - z_e\|^2
