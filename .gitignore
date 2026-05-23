@@ -23,5 +23,8 @@ data/
 *.pth
 *.ckpt
 
+# Build
+_site/
+
 # OS
 .DS_Store
