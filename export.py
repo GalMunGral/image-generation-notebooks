@@ -4,8 +4,9 @@ from nbconvert import HTMLExporter
 from pathlib import Path
 
 GROUPS = [
-    sorted(glob.glob('diffusion/*.ipynb')),
-    sorted(glob.glob('autoregressive/*.ipynb')),
+    ['autoregressive.ipynb'],
+    ['diffusion.ipynb'],
+    ['cascade.ipynb'],
 ]
 
 # Merge all notebooks into one
