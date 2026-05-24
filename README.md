@@ -10,4 +10,4 @@ These notebooks take a different view. A model learns the joint distribution $`p
 
 ### Strategy
 
-Two paradigms are implemented side by side, both trained on CIFAR-10. The autoregressive model makes $`p(x)`$ explicit as a product of conditionals over discrete tokens; the diffusion model defines it implicitly through a learned reverse process. Placing them together makes the point that there is more than one way to formulate the same problem. A third notebook combines both.
+Two paradigms are implemented side by side, both trained on CIFAR-10. The autoregressive model makes $`p(x)`$ explicit as a product of conditionals over discrete tokens; the diffusion model defines it implicitly through a learned reverse process. Placing them together makes the point that there is more than one way to formulate the same problem. A third notebook combines both, as an illustration of the compositionality of algorithms.
