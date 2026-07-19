@@ -4,7 +4,7 @@
 
 ### Purpose
 
-All image synthesis produces a discrete pixel grid. What differs is what that grid represents. In [cpu-raytracer](https://github.com/GalMunGral/cpu-raytracer) and [gl-raytracer](https://github.com/GalMunGral/gl-raytracer), each pixel estimates an integral of the radiance field over incoming light directions — the scene is a continuous physical model, and the image is a discrete approximation of it. In [gl-gaussian-splat](https://github.com/GalMunGral/gl-gaussian-splat), the scene is learned from photographs rather than specified, but the relationship is unchanged: the pixel grid remains a discretization of a continuous representation.
+All image synthesis produces a discrete pixel grid. What differs is what that grid represents. In [cpu-raytracer](https://github.com/hwenchi/cpu-raytracer) and [gl-raytracer](https://github.com/hwenchi/gl-raytracer), each pixel estimates an integral of the radiance field over incoming light directions — the scene is a continuous physical model, and the image is a discrete approximation of it. In [gl-gaussian-splat](https://github.com/hwenchi/gl-gaussian-splat), the scene is learned from photographs rather than specified, but the relationship is unchanged: the pixel grid remains a discretization of a continuous representation.
 
 These notebooks take a different view. A model learns the joint distribution $`p(x)`$ over natural images from data, and generation is sampling from it. The pixel grid is not an approximation of a continuous physical signal — it is a draw from a learned distribution. There is no scene, and the question of what the image represents disappears with it.
 
